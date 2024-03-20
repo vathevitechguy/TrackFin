@@ -5,8 +5,8 @@ import Dashboard from './dashboard';
 const App = () => {
   return (
     <>
-      <LandingPage />
-      {/* <Dashboard /> */}
+      {/* <LandingPage /> */}
+      <Dashboard />
     </>
   );
 };
