@@ -17,10 +17,6 @@ import {
 
 export const navLinks = [
   {
-    id: 'home',
-    title: 'Home',
-  },
-  {
     id: 'features',
     title: 'Features',
   },
@@ -32,8 +28,8 @@ export const navLinks = [
     id: 'clients',
     title: 'Clients',
   },
-  { id: 'login', title: 'Login', url: '' },
-  { id: 'signp', title: 'Sign Up', url: '' },
+  // { id: 'login', title: 'Login', url: '' },
+  // { id: 'signp', title: 'Sign Up', url: '' },
 ];
 
 export const features = [

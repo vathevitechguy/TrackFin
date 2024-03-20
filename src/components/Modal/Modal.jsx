@@ -1,27 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import './Modal.scss';
-import { DarkBtn } from '../../atoms/Buttons/Buttons';
-import Close from '../../../assets/icons/close.png';
-import LoadingSpinner from '../../molecule/LoadingSpinner/LoadingSpinner';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import LoadingSpinner from './LoadingSpinner';
+import { logo } from '../../landing/assets';
 
 const Modal = (props) => {
   const { type, isOpen, onClose, onSubmit, loading } = props;
   const [modalType, setModalType] = useState({});
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    password: '',
+  });
   const [formErrors, setFormErrors] = useState({});
 
   useEffect(() => {
-    if (type === 'contact') {
+    if (type === 'signin') {
       setModalType({
-        title: 'Send Oluwadare a message!',
-        textLabel: 'Message',
-        buttonText: 'Submit',
+        title: 'Sign In',
+        buttonText: 'Sign In',
+        description: 'Welcome back! Please sign in to continue.',
       });
-    } else if (type === 'comment') {
+    } else if (type === 'signup') {
       setModalType({
-        title: 'Leave a comment',
-        textLabel: 'Comment',
-        buttonText: 'Post Comment',
+        title: 'Sign Up',
+        buttonText: 'Sign Up',
+        description: 'Join us! Create your account to get started.',
       });
     }
   }, [type]);
@@ -63,9 +67,14 @@ const Modal = (props) => {
       errors.email = 'Invalid email format';
     }
 
-    if (!formData.message) {
-      isValid = false;
-      errors.message = `${modalType.textLabel} is required`;
+    if (type === 'signup') {
+      if (!formData.password) {
+        isValid = false;
+        errors.password = 'Password is required';
+      } else if (formData.password.length < 6) {
+        isValid = false;
+        errors.password = 'Password must be at least 6 characters';
+      }
     }
 
     setFormErrors(errors);
@@ -77,65 +86,97 @@ const Modal = (props) => {
 
     if (validateForm()) {
       onSubmit(formData);
-      // if (!loading?.loadingMutation) onClose();
     }
   };
 
   return (
     <div
-      className={`Modal ${isOpen ? 'open' : ''}`}
+      className={`fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50 transition-opacity duration-300 ${
+        isOpen
+          ? 'opacity-100 pointer-events-auto'
+          : 'opacity-0 pointer-events-none'
+      }`}
       onClick={handleOverlayClick}
     >
-      <div className="Modal_content">
-        <img src={Close} alt="close" onClick={onClose} />
-
-        <div className="Modal_container">
-          {loading?.loadingMutation ? (
-            <LoadingSpinner cS={{ height: '100%' }} />
-          ) : (
-            <>
-              <h6>{modalType.title}</h6>
-
-              <form onSubmit={handleSubmit}>
-                <div className="form_name">
-                  <label>Full Name</label>
-                  <input
-                    type="text"
-                    maxLength={256}
-                    name="fullName"
-                    value={formData.fullName || ''}
-                    placeholder="Enter your full name"
-                    onChange={handleInputChange}
-                  />
-                  <div className="error-message">{formErrors.fullName}</div>
-                </div>
-                <div className="form_email">
-                  <label>Email Address</label>
-                  <input
-                    type="email"
-                    maxLength={256}
-                    name="email"
-                    value={formData.email || ''}
-                    placeholder="Enter your email"
-                    onChange={handleInputChange}
-                  />
-                  <div className="error-message">{formErrors.email}</div>
-                </div>
-                <div className="form_message">
-                  <label>{modalType.textLabel}</label>
-                  <textarea
-                    rows="4"
-                    name="message"
-                    value={formData.message || ''}
-                    onChange={handleInputChange}
-                  />
-                  <div className="error-message">{formErrors.message}</div>
-                </div>
-                <DarkBtn type="submit" title={modalType.buttonText} />
-              </form>
-            </>
-          )}
+      <div className="bg-gray-800 rounded-lg p-8 max-w-md w-full space-y-6">
+        <div className="flex justify-between items-center">
+          <img src={logo} alt="Logo" className="h-8 w-auto" />
+          <button onClick={onClose} className="text-white hover:text-gray-400">
+            <FontAwesomeIcon icon={faTimes} />
+          </button>
         </div>
+
+        <h2 className="text-white text-2xl font-semibold">{modalType.title}</h2>
+
+        <p className="text-white">{modalType.description}</p>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-white">
+              Full Name
+            </label>
+            <input
+              type="text"
+              className="mt-1 p-2 w-full rounded-md border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+              name="fullName"
+              value={formData.fullName}
+              onChange={handleInputChange}
+            />
+            {formErrors.fullName && (
+              <p className="text-red-500 text-sm mt-1">{formErrors.fullName}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-white">
+              Email Address
+            </label>
+            <input
+              type="email"
+              className="mt-1 p-2 w-full rounded-md border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+            />
+            {formErrors.email && (
+              <p className="text-red-500 text-sm mt-1">{formErrors.email}</p>
+            )}
+          </div>
+
+          {type === 'signup' && (
+            <div>
+              <label className="block text-sm font-medium text-white">
+                Password
+                <span className="text-sm text-gray-400 ml-1">
+                  (min. 6 characters)
+                </span>
+              </label>
+              <input
+                type="password"
+                className="mt-1 p-2 w-full rounded-md border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
+              />
+              {formErrors.password && (
+                <p className="text-red-500 text-sm mt-1">
+                  {formErrors.password}
+                </p>
+              )}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            className="bg-blue-500 text-white py-2 px-4 rounded-lg w-full"
+          >
+            {loading?.loadingMutation ? (
+              <LoadingSpinner />
+            ) : (
+              modalType.buttonText
+            )}
+          </button>
+        </form>
       </div>
     </div>
   );

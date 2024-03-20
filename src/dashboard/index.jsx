@@ -13,7 +13,7 @@ const MainContent = ({ isOpen }) => {
       style={mainContentStyle}
       className="flex-auto h-full bg-gray-200 p-8 transition-all duration-300"
     >
-      <h1 className="text-2xl font-semibold mb-4">Main Content</h1>
+      {/* <h1 className="text-2xl font-semibold mb-4">Main Content</h1> */}
       <Outlet />
     </div>
   );
